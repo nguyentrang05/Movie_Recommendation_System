@@ -1,0 +1,6 @@
+{
+  "train_fingerprint": "551ec0e0073c906f2fcb78a3f81ec08440486d625a55eb58c0f1515a4fa21fe7",
+  "test_fingerprint": "1a9af9f5f751561c8719c6c20727003425c2fc5d3ae704a79f8b494594d708f6",
+  "created_utc": "2026-10-29T09:02:31.156590+00:00",
+  "note": "Full outer test. CF tuned on inner validation, then refit full train."
+}
