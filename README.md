@@ -16,7 +16,7 @@ python -m streamlit run app.py
 Trong giao diện có: gợi ý theo UserID gốc, lịch sử đánh giá, tìm tên/thể loại, phim tương tự, bảng/biểu đồ kết quả và tải CSV. Không có poster do dataset không cung cấp. Dữ liệu không có cốt truyện.
 
 ## 2. BPR-MF và Bias MF: chỉ cần xuất khi muốn demo đủ các mô hình nhóm
-**04 và thu_nghiem hiện không lưu trọng số**, nên output metric cũ không đủ để tái tạo gợi ý. Bản này không kèm checkpoint giả và không tự huấn luyện lại phần của bạn khác.
+**04 và thu_nghiem hiện không lưu trọng số**, nên output metric cũ không đủ để tái tạo gợi ý. Bản này không kèm checkpoint giả và không tự huấn luyện lại.
 
 ### BPR-MF (notebook 04)
 Mở notebooks/04_Matrix_Factorization.ipynb, Run All. Nếu kernel vẫn còn mô hình từ lần chạy xong thì không cần huấn luyện lại. Thêm một cell cuối:
@@ -38,7 +38,7 @@ Hai script tạo models/bpr_model.npz, models/mf_model.npz và bảng kết qu�
 
 Nếu muốn gửi lại để tích hợp/kiểm tra, gửi hai file .npz và các file *_export_results.csv/json tương ứng. Nếu nhóm chỉ chọn BPR làm MF chính, chỉ cần chạy/export 04; Bias MF là tùy chọn.
 
-## 3. Chạy lại phần của Ánh
+## 3. Chạy lại 
 
 ```bash
 python run_experiments.py
