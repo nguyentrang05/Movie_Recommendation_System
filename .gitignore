@@ -34,14 +34,17 @@ Thumbs.db
 
 data/raw/*
 data/processed/*
-
+reports/chi_tiet/*
+reports/figures/*
+reports/tables/*
 # Keep folder structure
 !data/raw/.gitkeep
 !data/processed/.gitkeep
-
+!reports/chi_tiet/.gitkeep
+!reports/figures/.gitkeep
+!reports/tables/.gitkeep
 
 # Experiment outputs
-
 experiments/results/*
 # Local data and generated models
 data/raw/*
