@@ -74,7 +74,6 @@ class Popularity:
         scores = np.asarray(scores).ravel()
         if len(scores) != len(self.items) or not np.isfinite(scores).all():
             raise ValueError('Vector điểm không hợp lệ.')
-        # Deterministic tie-breaking, unlike unspecified argsort ties in original notebooks.
         order = np.lexsort((self.items, -self.pop, -scores))
         excluded = set(exclude)
         return [(int(self.items[i]), float(scores[i])) for i in order
@@ -124,7 +123,6 @@ class CollaborativeFiltering(Popularity):
         if self.mode == 'user':
             scores = (self.graph[u] @ self.B).toarray().ravel()
         else:
-            # Each liked seed movie contributes to its k most similar neighbors.
             scores = (self.B[u] @ self.graph).toarray().ravel()
         return scores if np.any(scores > 0) else self.pop.copy()
 
