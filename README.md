@@ -132,11 +132,11 @@ Các bảng kết quả dưới đây sử dụng quy ước chung:
 | F1@10 | Trung bình điều hòa của Precision@10 và Recall@10 của từng người dùng, sau đó lấy trung bình toàn tập |
 | NDCG@10 | Đánh giá chất lượng thứ tự; phim liên quan ở vị trí cao được thưởng nhiều hơn |
 
-Evaluator chung sử dụng popularity rồi MovieID tăng dần để phá hòa. Quy tắc này có thể tạo chênh lệch nhỏ với thứ tự hòa điểm trong output notebook gốc. Điểm CF và Content-based là điểm xếp hạng, không phải rating dự đoán hoặc xác suất người dùng yêu thích phim.
+Các hàm xếp hạng ưu tiên điểm mô hình, sau đó đến popularity và MovieID tăng dần để xử lý trường hợp bằng điểm. Điểm CF và Content-based là điểm xếp hạng, không phải rating dự đoán hoặc xác suất người dùng yêu thích phim.
 
 ## 6. Kết quả thực nghiệm
 
-Bảng được tổng hợp từ các CSV trong `reports/tables/`, làm tròn bốn chữ số thập phân. Các file metadata tương ứng ghi cùng fingerprint train/test; BPR-MF và Bias MF lấy từ kết quả đánh giá sau khi xuất mô hình.
+Bảng dưới đây được đối chiếu từ output đã lưu trong các notebook của dự án và làm tròn bốn chữ số thập phân. Đây là kết quả của lần thực nghiệm được lưu, không phải kết quả tự động tính lại khi mở README. Các bảng CSV và JSON được tạo tại máy chạy; phiên bản repository hiện tại chưa lưu các file này.
 
 | Mô hình | Precision@10 | Recall@10 | F1@10 | NDCG@10 |
 |---|---:|---:|---:|---:|
@@ -147,13 +147,17 @@ Bảng được tổng hợp từ các CSV trong `reports/tables/`, làm tròn b
 | Bias MF | 0,0741 | 0,0391 | 0,0417 | 0,0816 |
 | Content-based Genres | 0,0677 | 0,0434 | 0,0433 | 0,0854 |
 
-Nguồn kết quả:
+Nguồn kết quả và file được tạo khi chạy notebook:
 
-- [Collaborative Filtering và baseline](reports/tables/03_test_results.csv).
-- [Content-based và baseline](reports/tables/05_test_results.csv).
-- [BPR-MF sau xuất mô hình](reports/tables/04_bpr_export_results.csv).
-- [Bias MF sau xuất mô hình](reports/tables/thu_nghiem_export_results.csv).
-- [Lựa chọn tham số CF trên validation](reports/tables/03_validation_results.csv).
+| Notebook | Bảng tổng hợp trong `reports/tables/` |
+|---|---|
+| [02_baseline_model.ipynb](notebooks/02_baseline_model.ipynb) | `02_baseline.csv` |
+| [03_collaborative_filtering.ipynb](notebooks/03_collaborative_filtering.ipynb) | `03_validation_results.csv`, `03_test_results.csv` |
+| [04_BPR_MF.ipynb](notebooks/04_BPR_MF.ipynb) | `04_bpr.csv` |
+| [05_content_based.ipynb](notebooks/05_content_based.ipynb) | `05_test_results.csv` |
+| [06_Bias_MF.ipynb](notebooks/06_Bias_MF.ipynb) | `thu_nghiem_mf.csv` |
+
+Các notebook 03, 04, 05 và 06 có bước xuất metadata JSON chứa fingerprint của train/test để ứng dụng kiểm tra dữ liệu. Cần chạy hết notebook, bao gồm cell cuối của 04 và 06. File `thu_nghiem_mf.csv` vẫn giữ tên này trong code dù notebook tương ứng đã đổi tên thành `06_Bias_MF.ipynb`.
 
 ### Nhận xét
 
@@ -176,42 +180,26 @@ Các kết luận chỉ áp dụng cho cấu hình và split hiện tại. Chưa
 | Phim tương tự | Chọn một phim để xem các phim có thể loại tương đồng |
 | Thực nghiệm | Xem bảng và biểu đồ so sánh, tải kết quả CSV |
 
-Ứng dụng hỗ trợ sáu phương pháp. BPR-MF và Bias MF cần file mô hình đã xuất ở máy chạy; các mô hình còn lại được fit và lưu cache khi sử dụng. Cấu hình CF mặc định lấy từ kết quả validation nếu khớp dữ liệu hiện tại. Bảng thực nghiệm chỉ được hiển thị khi metadata khớp fingerprint train/test.
+Ứng dụng hỗ trợ sáu phương pháp. BPR-MF và Bias MF cần file mô hình đã xuất ở máy chạy; các mô hình còn lại được fit và lưu cache khi sử dụng. Cấu hình CF mặc định lấy từ kết quả validation nếu khớp dữ liệu hiện tại. Với bảng có metadata, ứng dụng chỉ chấp nhận khi fingerprint train/test khớp. Hai bảng CF/Content-based bắt buộc có metadata; BPR-MF và Bias MF còn được phép hiển thị khi thiếu JSON nhưng kèm cảnh báo “Chưa có metadata”. Biểu đồ được tách riêng cho từng chỉ số Precision@10, Recall@10, F1@10 và NDCG@10.
 
 ### 7.1. Giao diện gợi ý cá nhân hóa
 
-> <img width="1858" height="977" alt="image" src="https://github.com/user-attachments/assets/0f710806-8237-44b3-b4e3-f8b8fd615aac" />
+<img width="1858" height="977" alt="image" src="https://github.com/user-attachments/assets/0f710806-8237-44b3-b4e3-f8b8fd615aac" />
 
-<!-- Sau khi tải ảnh lên repo, bỏ dòng ghi chú phía trên và bỏ dấu comment quanh dòng ảnh dưới đây.
-![Giao diện gợi ý phim cá nhân hóa](reports/figures/demo/01-personalized.png)
--->
 
 ### 7.2. Giao diện tìm kiếm phim
 
-> <img width="1862" height="963" alt="image" src="https://github.com/user-attachments/assets/9ce86a72-5f11-45d6-8844-5542bce2f43f" />
+<img width="1862" height="963" alt="image" src="https://github.com/user-attachments/assets/9ce86a72-5f11-45d6-8844-5542bce2f43f" />
 
-
-<!--
-![Giao diện tìm kiếm phim](reports/figures/demo/02-search.png)
--->
 
 ### 7.3. Giao diện phim tương tự
 
-> <img width="1860" height="980" alt="image" src="https://github.com/user-attachments/assets/ac581bec-1f4f-488e-af4a-2c196e87152e" />
+<img width="1860" height="980" alt="image" src="https://github.com/user-attachments/assets/ac581bec-1f4f-488e-af4a-2c196e87152e" />
 
-
-<!--
-![Giao diện phim tương tự](reports/figures/demo/03-similar.png)
--->
 
 ### 7.4. Giao diện so sánh thực nghiệm
 
-> <img width="1860" height="979" alt="image" src="https://github.com/user-attachments/assets/35808914-fa50-4251-a1a0-622773362726" />
-
-
-<!--
-![Giao diện so sánh thực nghiệm](reports/figures/demo/04-results.png)
--->
+<img width="1860" height="979" alt="image" src="https://github.com/user-attachments/assets/35808914-fa50-4251-a1a0-622773362726" />
 
 
 ## 8. Tổ chức mã nguồn
@@ -221,25 +209,27 @@ Các kết luận chỉ áp dụng cho cấu hình và split hiện tại. Chưa
 | `notebooks/01_EDA_proprecessing.ipynb` | Khảo sát dữ liệu và chia train/test |
 | `notebooks/02_baseline_model.ipynb` | Popularity baseline |
 | `notebooks/03_collaborative_filtering.ipynb` | User-CF, Item-CF, chọn tham số và đánh giá |
-| `notebooks/04_Matrix_Factorization.ipynb` | Huấn luyện BPR-MF |
+| `notebooks/04_BPR_MF.ipynb` | Huấn luyện BPR-MF |
 | `notebooks/05_content_based.ipynb` | Gợi ý dựa trên thể loại và tìm kiếm nội dung |
-| `notebooks/thu_nghiem.ipynb` | Thực nghiệm Bias MF |
-| `src/recommenders.py` | Thuật toán, evaluator và bộ nạp mô hình |
+| `notebooks/06_Bias_MF.ipynb` | Thực nghiệm Bias MF |
+| `src/recommenders.py` | Popularity, CF, Content-based, validation và evaluator cho notebook 03/05 |
+| `src/matrix_factorization.py` | Huấn luyện BPR-MF, Bias MF và tạo gợi ý |
+| `src/du_lieu.py`, `src/popularity.py`, `src/goi_y.py` | Đọc/chia dữ liệu, baseline và xếp hạng cho nhánh 02/04/06 |
+| `src/danh_gia.py`, `src/luu_ket_qua.py` | Đánh giá nhánh 02/04/06, lưu CSV và mô hình joblib |
 | `src/experiments.py` | Xuất bảng kết quả và metadata |
-| `scripts/export_bpr.py`, `scripts/export_mf.py` | Xuất trọng số, mapping ID và đánh giá lại mô hình |
 | `prepare_data.py` | Tạo train/test theo cùng quy tắc của notebook 01 |
 | `run_experiments.py` | Chạy và lưu output notebook 03, 05 |
 | `app.py` | Giao diện Streamlit |
-| `models/` | Cấu hình CF; các checkpoint `.npz` được tạo tại máy chạy |
+| `models/` | `cf_config.json`, `mo_hinh_bpr.joblib`, `mo_hinh_mf.joblib` |
 | `reports/tables/` | Bảng kết quả, metric theo user và metadata |
 | `reports/figures/` | Hình minh họa và ảnh demo bổ sung |
 | `data/raw/`, `data/processed/` | Dữ liệu nguồn và dữ liệu sau khi chia tập, chuẩn bị tại máy chạy |
 
-## 9. Cài đặt và tái lập
+## 9. Cài đặt và chạy dự án
 
-### 9.1. Môi trường
+### 9.1. Cài môi trường
 
-Sử dụng Python 3.10 trở lên; khuyến nghị Python 3.11. Các thư viện chính gồm NumPy, Pandas, SciPy, Scikit-learn, Matplotlib, Jupyter và Streamlit. Các triển khai hiện tại sử dụng CPU; bật GPU không tự chuyển các vòng lặp NumPy sang GPU.
+Có thể dùng môi trường Python 3.11 với các thư viện trong `requirements.txt`. Mã hiện tại chạy bằng NumPy/SciPy trên CPU; không cần bật GPU để sử dụng.
 
 ```bash
 git clone https://github.com/nguyentrang05/Movie_Recommendation_System.git
@@ -247,19 +237,17 @@ cd Movie_Recommendation_System
 python -m venv .venv
 ```
 
-Kích hoạt môi trường trên Windows PowerShell:
+Windows PowerShell:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Trên macOS/Linux:
+Linux/macOS hoặc terminal Codespaces:
 
 ```bash
 source .venv/bin/activate
 ```
-
-Cài thư viện:
 
 ```bash
 python -m pip install -r requirements.txt
@@ -267,7 +255,11 @@ python -m pip install -r requirements.txt
 
 ### 9.2. Chuẩn bị dữ liệu
 
-**Repository không lưu các file dữ liệu và checkpoint `.npz`.** Tải MovieLens 1M từ nguồn GroupLens, giải nén và đặt `ratings.dat`, `movies.dat`, `users.dat` trong `data/raw/`. Nên giữ README nguồn đi kèm dữ liệu.
+Tải MovieLens 1M từ [GroupLens](https://grouplens.org/datasets/movielens/1m/), giải nén và đặt ba file sau vào đúng thư mục:
+
+- `data/raw/ratings.dat`
+- `data/raw/movies.dat`
+- `data/raw/users.dat`
 
 Chạy tại thư mục gốc dự án:
 
@@ -275,53 +267,81 @@ Chạy tại thư mục gốc dự án:
 python prepare_data.py
 ```
 
-Lệnh tạo `data/processed/train.csv` và `test.csv`. Có thể thay bằng Run All notebook 01; không bắt buộc thực hiện cả hai cách.
+Lệnh tạo `data/processed/train.csv`, `data/processed/test.csv` và `split_info.json` theo quy tắc chia ngẫu nhiên 80/20, seed 42. Muốn xem toàn bộ phần EDA, mở và chạy notebook 01. Không bắt buộc chạy cả hai cách để tạo train/test.
 
-### 9.3. Chạy thực nghiệm
-
-Mở Jupyter:
+Notebook 01 hiện sử dụng các đường dẫn `../data/...`, nên thư mục làm việc của kernel cần là `notebooks/`. Có thể mở Jupyter từ thư mục này:
 
 ```bash
+cd notebooks
 python -m jupyter notebook
 ```
 
-Chạy notebook 01 trước nếu chưa tạo dữ liệu; sau đó có thể chạy 02, 03, 04, 05 và `thu_nghiem`. Với các notebook gốc có đường dẫn `../data/`, thư mục làm việc của kernel cần là `notebooks/`.
+### 9.3. Chạy các notebook
 
-Để chạy riêng 03 và 05, dùng terminal ở thư mục gốc:
+Trong Jupyter, chọn **Restart Kernel and Run All Cells** khi cần chạy lại đầy đủ, đặc biệt sau khi sửa file trong `src/`.
+
+| Thứ tự | Notebook | Công việc |
+|---|---|---|
+| 01 | `01_EDA_proprecessing.ipynb` | Khảo sát dữ liệu và xuất train/test |
+| 02 | `02_baseline_model.ipynb` | Đánh giá Popularity |
+| 03 | `03_collaborative_filtering.ipynb` | Chọn k, đánh giá CF, lưu cấu hình và kết quả |
+| 04 | `04_BPR_MF.ipynb` | Huấn luyện BPR-MF, lưu joblib, đánh giá và xuất JSON |
+| 05 | `05_content_based.ipynb` | Đánh giá Content-based, kiểm tra tìm kiếm/phim tương tự |
+| 06 | `06_Bias_MF.ipynb` | Huấn luyện Bias MF, lưu joblib, đánh giá và xuất JSON |
+
+Khi đã có train/test, các notebook 02–06 có thể chạy độc lập. Riêng 03 tự chọn k trong notebook của nó. Notebook 04 và 06 đã có sẵn lệnh lưu mô hình; không cần script export riêng hoặc lệnh `%run`.
+
+Để chạy riêng 03 và 05 bằng terminal tại thư mục gốc:
 
 ```bash
 python run_experiments.py
 ```
 
-Lệnh này ghi output vào hai notebook và tạo các bảng kết quả; không huấn luyện BPR-MF hay Bias MF. Nếu sửa mã trong `src/` khi dùng notebook, cần restart kernel rồi chạy lại để nạp mã mới.
+Script này thực thi các cell và ghi lại stdout vào notebook. Nó không lưu đầy đủ biểu đồ/hình rich output vào notebook; nếu cần hình cho báo cáo, hãy chạy bằng Jupyter. Script không huấn luyện 04/06.
 
-### 9.4. Xuất BPR-MF và Bias MF
+### 9.4. Mô hình đã lưu và kết quả thực nghiệm
 
-Sau khi chạy xong notebook 04, thêm và chạy cell cuối **trong cùng kernel**:
+Repository hiện có hai file mô hình:
 
-```python
-%run -i ../scripts/export_bpr.py
-```
+- `models/mo_hinh_bpr.joblib`
+- `models/mo_hinh_mf.joblib`
 
-Sau khi chạy xong `thu_nghiem.ipynb`, thực hiện tương tự:
+App có thể nạp các file này nếu danh sách người dùng, danh sách phim và lịch sử tương tác khớp train hiện tại. Cơ chế kiểm tra mô hình joblib chưa so sánh toàn bộ giá trị rating bằng fingerprint; khi đổi dữ liệu hoặc cách chia, cần huấn luyện lại mô hình tương ứng.
 
-```python
-%run -i ../scripts/export_mf.py
-```
+Để tái lập đầy đủ, chạy hết notebook 04 và 06 trên cùng train/test với 03 và 05. Cell cuối của 04/06 xuất JSON cho bảng kết quả. Việc có sẵn joblib không đồng nghĩa máy đã có CSV/JSON để hiển thị trang Thực nghiệm.
 
-Các lệnh `%run` dành cho cell notebook, không chạy trực tiếp trong PowerShell. Không restart kernel giữa bước huấn luyện và bước xuất. File đầu ra là `models/bpr_model.npz` hoặc `models/mf_model.npz`, cùng bảng kết quả trong `reports/tables/`.
-
-Nếu kernel đang ở thư mục gốc dự án, đường dẫn script là `scripts/export_bpr.py` hoặc `scripts/export_mf.py`. File mô hình phải được huấn luyện từ đúng train hiện tại; ứng dụng kiểm tra mapping và fingerprint trước khi nạp.
+Dữ liệu raw, train/test và các kết quả trong `reports/` đang bị loại khỏi Git bằng `.gitignore`. Vì vậy, người clone repository phải chuẩn bị dữ liệu và chạy notebook để tạo bảng thực nghiệm tại máy mình. Output đã lưu trong notebook vẫn có thể xem trực tiếp trên GitHub.
 
 ### 9.5. Mở ứng dụng
 
-Trong terminal tại thư mục gốc:
+Chạy ở thư mục chứa `app.py`:
 
 ```bash
 python -m streamlit run app.py
 ```
 
-Mở địa chỉ mà terminal hiển thị, thường là `http://localhost:8501`. Sau khi chuẩn bị dữ liệu, có thể dùng Popularity, User-CF, Item-CF và Content-based ngay. Muốn dùng đủ sáu phương pháp cần hoàn tất bước xuất hai mô hình MF.
+Nếu terminal đang ở `notebooks/`, chạy `cd ..` trước. Mở địa chỉ mà terminal hiển thị, thường là `http://localhost:8501`. Trong Codespaces, mở cổng 8501 qua mục **Ports**.
+
+Sau khi chuẩn bị dữ liệu, có thể dùng Popularity, User-CF, Item-CF và Content-based. CF dùng k từ `cf_config.json` nếu fingerprint train khớp; nếu thiếu hoặc không khớp, app dùng k = 20 và thông báo. BPR-MF/Bias MF cần file joblib phù hợp. Trang Thực nghiệm cần các bảng kết quả đã xuất.
+
+### 9.6. Kiểm tra chức năng
+
+```bash
+python tests/kiem_tra.py
+```
+
+Bộ kiểm tra dùng dữ liệu nhỏ để kiểm tra lọc lịch sử của MF, người dùng mới, metric, lưu/nạp mô hình và tái lập seed. Các kiểm tra CF/Content-based trong file này hiện đang được comment, nên lệnh trên chưa kiểm tra đầy đủ cả sáu phương pháp. Dòng thông báo “7 nhóm kiểm tra” ở cuối file chưa phản ánh số nhóm đang thực sự chạy. Kết quả kiểm tra nhỏ không dùng làm số liệu báo cáo.
+
+### 9.7. Một số tình huống thường gặp
+
+| Hiện tượng | Cách xử lý |
+|---|---|
+| Thiếu `train.csv`, `test.csv` hoặc `movies.dat` | Đặt dữ liệu đúng thư mục và chạy `python prepare_data.py` |
+| App báo chưa có bảng kết quả | Chạy notebook 03, 04, 05, 06 để xuất bảng |
+| BPR/Bias MF báo thiếu metadata | Chạy cell cuối notebook tương ứng trong kernel đã có dữ liệu và kết quả đánh giá đúng train/test |
+| Fingerprint bảng kết quả không khớp | Đánh giá lại mô hình trên dữ liệu hiện tại và xuất lại kết quả; không chỉ đổi tên file |
+| Mô hình joblib không khớp train | Chạy lại notebook MF tương ứng |
+| Sửa `src/` nhưng notebook vẫn dùng logic cũ | Restart kernel rồi Run All |
 
 ## 10. Hạn chế và hướng phát triển
 
@@ -347,8 +367,8 @@ Mở địa chỉ mà terminal hiển thị, thường là `http://localhost:850
 
 | Thành viên | Mã sinh viên | Phân công |
 |---|---|---|
-| Nguyễn Quỳnh Trang | 23010651 | [Nhiệm vụ] |
-| Nguyễn Minh Ánh | 2301071 | [Nhiệm vụ] |
+| Nguyễn Quỳnh Trang | 23010651 | Tìm hiểu bài toán và dữ liệu; EDA, xử lý và chia dữ liệu; Popularity; Bias MF và BPR-MF; cùng tổng hợp thực nghiệm và hoàn thiện báo cáo |
+| Nguyễn Minh Ánh | 23010718 | User-CF, Item-CF và chọn k; Content-based; app Movie Compass; cùng tổng hợp thực nghiệm và hoàn thiện báo cáo |
 
 
 ## 12. Tài liệu tham khảo
@@ -356,4 +376,4 @@ Mở địa chỉ mà terminal hiển thị, thường là `http://localhost:850
 1. GroupLens Research. [MovieLens 1M Dataset](https://grouplens.org/datasets/movielens/1m/).
 2. F. Maxwell Harper và Joseph A. Konstan. 2015. *The MovieLens Datasets: History and Context*. ACM Transactions on Interactive Intelligent Systems, 5(4), Article 19. [DOI: 10.1145/2827872](https://doi.org/10.1145/2827872).
 
-Các chi tiết triển khai và số liệu thực nghiệm của dự án có thể đối chiếu trực tiếp trong các notebook, mã nguồn và bảng CSV được liên kết ở trên.
+Các chi tiết triển khai và số liệu thực nghiệm của dự án có thể đối chiếu trực tiếp trong các notebook và mã nguồn được liên kết ở trên; bảng CSV được tạo khi chạy notebook.
